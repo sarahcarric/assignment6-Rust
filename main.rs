@@ -122,6 +122,18 @@ fn main() {
     // CHANGE CODE START: Don't change any code above this line
 
     // Change the following code to create 2 threads that run concurrently and each of which uses map_data() function to process one of the two partitions
+    
+    //cloning xs to be used with the threads
+    let xClone=xs.clone();
+
+    //create 2 threads
+    let data1=thread::spawn(move||map_data(&xs[0]));
+    let data2=thread::spawn(move || map_data(&xclone[1]));
+
+    //join the threads
+    let _join1=data1.join().unwrap();
+    let _join2=data2.join().unwrap();
+
 
     intermediate_sums.push(map_data(&xs[0]));
     intermediate_sums.push(map_data(&xs[1]));
@@ -143,8 +155,39 @@ fn main() {
     // 5. Prints information about the intermediate sums
     // 5. Calls reduce_data to process the intermediate sums
     // 6. Prints the final sum computed by reduce_data
+    
+    //create vector of partitions
+    let divide=parition_data(num_partitions, &v);
+    print_partition_info(&divide));
 
+    let mut intermediate_sums_2=Vec<usize>=Vec::new();
+
+    for t in 0..num_partitions{
+        let divide_clone=divide.clone();
+
+        //create a new thread
+        let thread1=thread::spawn(move || map_data(&divide.clone[t]));
+        let thread2=thread2_thread.join().unwrap();
+        intermediate_sums_2.push(thread2);
+
+    }
+    printfln!("Intermediate sums={:?}", intermediate_sums_2);
+
+    let sec_sum=reduce_data(&intermediate_sums_2);
+    println!("Sum={}", sec_sum);
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 /*
 * CHANGE CODE: code this function
@@ -161,6 +204,40 @@ fn main() {
 * 
 */
 fn partition_data(num_partitions: usize, v: &Vec<usize>) -> Vec<Vec<usize>>{
-    // Remove the following line which has been added to remove a compiler error
-    partition_data_in_two(v)
+    //partition beased on the number of partitions passed
+    let partition_size=v.len()/num_partitions;
+
+    let mut xs:Vec<Vec<usize>>=Vec::new();
+
+    let mut mod_val=v.len()%num_partitions;
+
+    let mut start=0;
+
+    let mut end=partition_size;
+
+    for i in 0..num_partitions{
+        let mut val=Vec<usize>=Vec::new();
+
+        for j in start..end{
+            val.push(v[j);
+
+        }
+        xs.push(val);
+
+        if mod_val >0 {
+            xs[i].push(v[end]);
+
+            start=start+partition_size+1;
+            end=end+parittion_size+1;
+            mod_val-=1;
+
+        }
+        else{
+            start=start+partition_size;
+            end=end+partition_size;
+
+        }
+
+    }
+    return xs;
 }
